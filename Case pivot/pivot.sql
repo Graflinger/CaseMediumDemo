@@ -34,3 +34,26 @@ GROUP BY
 
 
 -- Pivot Statement
+DECLARE @colnameList varchar(MAX)
+SET @colnameList = Null
+SELECT  @colnameList =  STRING_AGG([order], ',') 
+FROM (SELECT DISTINCT [order]
+		FROM [pizzaPlace].[orders]) innerQuery
+
+PRINT @colnameList
+
+DECLARE @SQLQuery NVARCHAR(MAX)
+SET @SQLQuery = 'SELECT * FROM
+(
+SELECT
+[order],
+[order] as pizza_counter,
+customerId
+FROM [pizzaPlace].[orders]
+) innerSelect
+PIVOT (
+COUNT (pizza_counter)
+FOR [order] IN ('+@colnameList+')
+) alias4'
+
+EXEC(@SQLQuery)
